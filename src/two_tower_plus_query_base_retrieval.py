@@ -143,8 +143,10 @@ class TwoTowerPlusQueryBaseRetrieval(nn.Module):
 
         Args:
             user_id (torch.Tensor): Tensor containing the user IDs. Shape: [B]
-            user_features (torch.Tensor): Tensor containing the user features. Shape: [B, IU]
-            user_history (torch.Tensor): For each batch an H length history of ids. Shape: [B, H]
+            user_features (torch.Tensor): Tensor containing the user features.
+                Shape: [B, IU]
+            user_history (torch.Tensor): For each batch an H length history of
+                ids. Shape: [B, H]
                 In this base implementation this is unused. In subclasses this
                 affects the computation.
 
@@ -179,17 +181,20 @@ class TwoTowerPlusQueryBaseRetrieval(nn.Module):
 
         Args:
             user_id: the user id
-            user_features: the user features. We are assuming these are all dense features.
-                In practice you will probably want to support sparse embedding features as well.
-            user_history: for each user, the history of items they have interacted with.
-                This is a tensor of item ids. Here we are assuming that the history is
-                a fixed length, but in practice you will probably want to support variable
-                length histories. jagged tensors are a good way to do this.
-                This is NOT USED in this implementation. It is handled in a follow on derived class.
+            user_features: the user features. We are assuming these are all
+                dense features. In practice you will probably want to support
+                sparse embedding features as well.
+            user_history: for each user, the history of items they have
+                interacted with. This is a tensor of item ids. Here we are
+                assuming that the history is a fixed length, but in practice
+                you will probably want to support variable length histories.
+                jagged tensors are a good way to do this.
+                This is NOT USED in this implementation. It is handled in a
+                follow on derived class.
             query: text if present
 
         Returns:
-            torch.Tensor: Tensor containing query user embeddings. Shape: [B, DI]
+            torch.Tensor: Tensor containing query + user embeddings. [B, DI]
         """
         user_tower_input = self.process_user_features(
             user_id=user_id,
@@ -248,7 +253,8 @@ class TwoTowerPlusQueryBaseRetrieval(nn.Module):
                 trigram_ids
             )  # [K, D]
 
-            # Mean pool the trigram embeddings to get a single embedding for the item_name
+            # Mean pool the trigram embeddings to get a single embedding for
+            # the item_name
             item_name_embedding = trigram_embeddings.mean(dim=0)  # [D]
 
             # Assign the computed embedding to item_name_embeddings tensor
@@ -350,7 +356,8 @@ class TwoTowerPlusQueryBaseRetrieval(nn.Module):
                 trigram_ids
             )  # [K, D]
 
-            # Mean pool the trigram embeddings to get a single embedding for the query
+            # Mean pool the trigram embeddings to get a single embedding for
+            # the query
             query_embedding = trigram_embeddings.mean(dim=0)  # [D]
 
             # Assign the computed embedding to the query_embeddings tensor
@@ -412,12 +419,15 @@ class TwoTowerPlusQueryBaseRetrieval(nn.Module):
     ) -> torch.Tensor:
         """This is used for inference.
 
-        Compute the user embedding and return the top num_items items using the mips module.
+        Compute the user embedding and return the top num_items items using the
+        mips module.
 
         Args:
             user_id (torch.Tensor): Tensor representing the user ID. Shape: [B]
-            user_features (torch.Tensor): Tensor representing the user features. Shape: [B, IU]
-            user_history (torch.Tensor): Tensor representing the user history. Shape: [B, H]
+            user_features (torch.Tensor): Tensor representing the user features.
+                Shape: [B, IU]
+            user_history (torch.Tensor): Tensor representing the user history.
+                Shape: [B, H]
             query (torch.Tensor): If present, this is the search query [B]
 
         Returns:
@@ -565,9 +575,12 @@ class TwoTowerPlusQueryBaseRetrieval(nn.Module):
             float: The computed loss.
 
         Notes:
-            - The loss is computed using softmax loss and weighted by the net_user_value.
-            - Optionally, the net_user_value can be debiased by the part explained purely by position.
-            - The loss is clamped to preserve positive net_user_value and normalized between 0 and 1.
+            - The loss is computed using softmax loss and weighted by the
+                net_user_value.
+            - Optionally, the net_user_value can be debiased by the part
+                explained purely by position.
+            - The loss is clamped to preserve positive net_user_value and
+                normalized between 0 and 1.
         """
         # Compute the left tower embedding
         query_plus_context: torch.Tensor = (
